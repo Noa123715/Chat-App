@@ -1,0 +1,8 @@
+init.sh
+delete.sh
+.git
+README.md
+.Dockerfile
+large.Dockerfile
+mid.Dockerfile
+thin.Dockerfile
