@@ -1,11 +1,31 @@
 from flask import Flask, request, render_template, redirect, session
+# import to work with csv files
 import csv
 import os
 import datetime
+# import to work with mySQL
+from mysql.connector import connect, Error
 
+# connect to flask
 app = Flask(__name__)
 app.secret_key = "123"
 PATH_ROOMS =  os.environ["PATH_ROOMS"]
+
+# config the value to connect to DataBase
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = 'flask'
+
+# connect to the database in mySQL
+connection = connect(
+    host="localhost", # or "127.0.0.1"
+    port="5000", # Default MySQL port
+    user="Noa",
+    password="noa@2021",
+    database="chat_app"
+)
+myConnector = connection.cursor()
 
 
 @app.route('/')
@@ -20,7 +40,8 @@ def register():
         userName = request.form["username"]
         password = request.form["password"]
         #exist user move to the login page
-        if checkIfUserExist(userName, password):
+        # if checkIfUserExist(userName, password): # with file
+        if checkIfUserExistSQL(userName, password): # with DATABASE
             return redirect('login')
         addUser(userName, password)
         session['username'] = userName
@@ -98,10 +119,8 @@ def health_check():
     return 'OK', 200
 
 
-
-
-
-
+# =======================================================================
+# function with files
 def addMessage(room_id, msg):
     if 'username' in session:
         username = session['username']
@@ -138,9 +157,41 @@ def addUser(username, password):
         writer.writerow(row)
         
 
+# ==========================================================================
+# function with SQL
+def addMessage(room_id, msg):
+    if 'username' in session:
+        username = session['username']
+    else:
+        username = 'guest'
+    date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(f'{PATH_ROOMS}/{room_id}.txt', 'a') as file:
+        file.write(f'[{date}] {username} : {msg}\n')
+        
+
+def getMessages(room_id):
+    # messages=[]
+    with open(f'{PATH_ROOMS}/{room_id}.txt', 'r') as file:
+        # for line in file:
+        #     messages.append(line.rstrip())
+        messages=file.read()
+    return messages
+
+
+def checkIfUserExistSQL(username, password):
+    ifExist = "SELECT * FROM users"
+    myConnector.execute(ifExist)
+    
+
+def addUser(username, password):
+    row = [username, password]
+    with open('./users.csv', 'a', newline='\n') as file:
+        writer = csv.writer(file, lineterminator='\n')
+        if file.tell() == 0:
+            writer.writerow(['username', 'password'])
+        writer.writerow(row)
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
-
 
