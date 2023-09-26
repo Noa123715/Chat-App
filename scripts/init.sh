@@ -1,7 +1,7 @@
 #!/bin/bash
 # ./delete
 # Build the image
-'version='latest
+version='latest'
 if [ $# -nq 0 ]; then
     # Arguments were passed, so use them
     version=$1
