@@ -1,7 +1,12 @@
 #!/bin/bash
 # ./delete
 # Build the image
-docker build -t chat-app:${version}
+'version='latest
+if [ $# -nq 0 ]; then
+    # Arguments were passed, so use them
+    version=$1
+fi
+    docker build -t chat-app:${version}
 
 # # Run the container 
 docker run -p 5000:5000 --name chat-App-run chat-app:${version}
