@@ -5,7 +5,7 @@ if [ "$(docker ps -a -q --filter ancestor=chat_app)" ]; then
   # Stop and delete the container
   docker stop $(docker ps -a -q --filter ancestor=chat_app)
   docker rm $(docker ps -a -q --filter ancestor=chat_app)
-fi
+fi 
 
 # Check if the image exists
 if [ "$(docker images -q chat_app)" ]; then
