@@ -11,3 +11,5 @@ docker volume prune -f
 
 # Prune all networks
 docker network prune -f
+
+docker system prune --volumes -f
